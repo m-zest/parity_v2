@@ -1,15 +1,57 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export function useDashboardStats() {
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("dashboard-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "models" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "vendors" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "incidents" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "compliance_assessments" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => {
       const [modelsRes, vendorsRes, incidentsRes, assessmentsRes] = await Promise.all([
-        supabase.from("models").select("id, status, risk_level"),
-        supabase.from("vendors").select("id"),
-        supabase.from("incidents").select("id, status, severity"),
-        supabase.from("compliance_assessments").select("id, status, deadline"),
+        supabase.from("models").select("id, status, risk_level, name, created_at"),
+        supabase.from("vendors").select("id, name, risk_score"),
+        supabase.from("incidents").select("id, status, severity, title, created_at"),
+        supabase.from("compliance_assessments").select("id, status, deadline, framework_id"),
       ]);
 
       if (modelsRes.error) throw modelsRes.error;
@@ -70,6 +112,16 @@ export function useDashboardStats() {
         { name: "Upcoming", value: upcoming, color: "hsl(var(--info))" },
       ];
 
+      // Recent models for quick view
+      const recentModels = models
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5);
+
+      // Recent incidents
+      const recentIncidents = incidents
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5);
+
       return {
         stats: {
           totalModels: models.length,
@@ -81,12 +133,35 @@ export function useDashboardStats() {
         riskDistribution,
         incidentData,
         taskData,
+        recentModels,
+        recentIncidents,
+        vendors,
       };
     },
+    refetchInterval: 30000, // Refetch every 30 seconds as fallback
   });
 }
 
 export function useRecentActivity() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("activity-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "audit_logs" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["recent-activity"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ["recent-activity"],
     queryFn: async () => {
