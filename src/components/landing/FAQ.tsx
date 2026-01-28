@@ -12,7 +12,7 @@ import { useState } from "react";
 const faqs = [
   {
     question: "What is Parity AI?",
-    answer: "Parity AI is a comprehensive AI governance platform that helps organizations monitor, audit, and ensure compliance of their AI systems across multiple regulatory frameworks including NYC Local Law 144, EU AI Act, and more.",
+    answer: "Parity AI is a comprehensive AI governance platform that helps organizations monitor, audit, and ensure compliance of their AI systems across multiple regulatory frameworks including NYC Local Law 144, EU AI Act, India's DPDPA, and more.",
   },
   {
     question: "Is Parity AI secure?",
@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     question: "Which compliance frameworks are supported?",
-    answer: "We support NYC Local Law 144, EU AI Act, Colorado AI Act, Illinois AIVOIA, ISO 42001, NIST AI RMF, and more. Our platform is continuously updated as new regulations emerge.",
+    answer: "We support NYC Local Law 144, EU AI Act, India's Digital Personal Data Protection Act (DPDPA), IT Act 2000, NITI Aayog AI Principles, Colorado AI Act, Illinois AIVOIA, ISO 42001, NIST AI RMF, and more. Our platform is continuously updated as new regulations emerge globally.",
   },
   {
     question: "What are the fees for audits?",
