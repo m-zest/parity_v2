@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useDashboardStats, useRecentActivity } from "@/hooks/useDashboardStats";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import { QuickViewPanels } from "@/components/dashboard/QuickViewPanels";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 
 const Dashboard = () => {
@@ -42,6 +43,13 @@ const Dashboard = () => {
         taskData={dashboardData?.taskData}
         incidentData={dashboardData?.incidentData}
         riskDistribution={dashboardData?.riskDistribution}
+        isLoading={statsLoading}
+      />
+
+      {/* Quick View Panels - Recent Models & Incidents */}
+      <QuickViewPanels
+        recentModels={dashboardData?.recentModels}
+        recentIncidents={dashboardData?.recentIncidents}
         isLoading={statsLoading}
       />
 
