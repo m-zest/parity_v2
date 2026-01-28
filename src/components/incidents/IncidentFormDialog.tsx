@@ -234,14 +234,14 @@ export function IncidentFormDialog({ open, onOpenChange, incident }: IncidentFor
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Linked Model</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={(val) => field.onChange(val === "__none__" ? "" : val)} value={field.value || "__none__"}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select model" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="__none__">None</SelectItem>
                         {models?.map((model) => (
                           <SelectItem key={model.id} value={model.id}>
                             {model.name}
@@ -259,14 +259,14 @@ export function IncidentFormDialog({ open, onOpenChange, incident }: IncidentFor
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Linked Vendor</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={(val) => field.onChange(val === "__none__" ? "" : val)} value={field.value || "__none__"}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select vendor" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="__none__">None</SelectItem>
                         {vendors?.map((vendor) => (
                           <SelectItem key={vendor.id} value={vendor.id}>
                             {vendor.name}

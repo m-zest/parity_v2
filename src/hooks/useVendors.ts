@@ -27,10 +27,16 @@ export function useCreateVendor() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (vendor: Omit<VendorInsert, "id" | "created_at" | "updated_at">) => {
+    mutationFn: async (vendor: Omit<VendorInsert, "id" | "created_at" | "updated_at" | "organization_id">) => {
+      // Fetch user's organization_id from their profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .single();
+
       const { data, error } = await supabase
         .from("vendors")
-        .insert(vendor)
+        .insert({ ...vendor, organization_id: profile?.organization_id })
         .select()
         .single();
 
