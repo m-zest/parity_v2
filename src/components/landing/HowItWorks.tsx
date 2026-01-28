@@ -63,8 +63,8 @@ const steps = [
         {[
           { name: "NYC LL144", score: "+94.7%", icon: "🏛️" },
           { name: "EU AI Act", score: "+88.2%", icon: "🇪🇺" },
+          { name: "DPDPA India", score: "+92.1%", icon: "🇮🇳" },
           { name: "ISO 42001", score: "+91.2%", icon: "📋" },
-          { name: "NIST AI RMF", score: "+89.5%", icon: "🔒" },
         ].map((item) => (
           <div
             key={item.name}

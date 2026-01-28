@@ -3,6 +3,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Tagline } from "@/components/landing/Tagline";
 import { WhyParity } from "@/components/landing/WhyParity";
 import { ProductSuite } from "@/components/landing/ProductSuite";
+import { ComplianceFrameworks } from "@/components/landing/ComplianceFrameworks";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { FAQ } from "@/components/landing/FAQ";
@@ -18,6 +19,7 @@ const Landing = () => {
         <Tagline />
         <WhyParity />
         <ProductSuite />
+        <ComplianceFrameworks />
         <HowItWorks />
         <Testimonials />
         <FAQ />
