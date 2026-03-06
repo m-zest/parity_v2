@@ -26,6 +26,7 @@ import UserManagement from "./pages/UserManagement";
 import FinParity from "./pages/FinParity";
 import MedParity from "./pages/MedParity";
 import ContentGuard from "./pages/ContentGuard";
+import Enterprise from "./pages/Enterprise";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/products/finparity" element={<FinParity />} />
               <Route path="/products/medparity" element={<MedParity />} />
               <Route path="/products/contentguard" element={<ContentGuard />} />
+              <Route path="/products/enterprise" element={<Enterprise />} />
             </Route>
 
             {/* Catch-all */}
