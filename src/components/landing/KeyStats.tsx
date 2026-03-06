@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import { BarChart3, Clock, Shield } from "lucide-react";
 
 const stats = [
-  { icon: BarChart3, value: "500+", label: "Models Monitored" },
-  { icon: Clock, value: "99.9%", label: "Uptime" },
-  { icon: Shield, value: "50+", label: "Compliance Frameworks" },
+  { icon: Shield, value: "EU AI Act", label: "Articles 9 & 13 Ready" },
+  { icon: BarChart3, value: "100%", label: "Open Source" },
+  { icon: Clock, value: "Free", label: "For Public Institutions" },
 ];
 
 export function KeyStats() {

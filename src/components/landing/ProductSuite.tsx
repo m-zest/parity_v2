@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import Marquee from "react-fast-marquee";
 
 const products = [
-  { name: "FairHire AI", category: "HR", status: "active", color: "emerald" },
-  { name: "MedParity", category: "Healthcare", status: "soon", color: "rose" },
-  { name: "FinParity", category: "Finance", status: "soon", color: "amber" },
-  { name: "ContentGuard", category: "Media", status: "soon", color: "violet" },
-  { name: "Enterprise", category: "General", status: "soon", color: "blue" },
+  { name: "FairHire AI", category: "Public Employment", status: "active", color: "emerald" },
+  { name: "MedParity", category: "Public Health", status: "soon", color: "rose" },
+  { name: "FinParity", category: "Public Finance", status: "soon", color: "amber" },
+  { name: "ContentGuard", category: "Public Media", status: "soon", color: "violet" },
+  { name: "GovAI Suite", category: "Government", status: "soon", color: "blue" },
 ];
 
 const colorClasses: Record<string, { bg: string; text: string }> = {
@@ -52,17 +52,17 @@ export function ProductSuite() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="mb-4 text-4xl font-light text-foreground sm:text-5xl">
-              All Products, One Platform
+              Sector-Specific Compliance
             </h2>
             <p className="max-w-md text-muted-foreground">
-              Monitor, audit, and govern all your AI systems on a single platform.
-              A seamless experience with no compromises.
+              Purpose-built governance tools for every public sector domain.
+              From hiring algorithms to healthcare AI — accountability by design.
             </p>
-            <Link 
-              to="/dashboard" 
+            <Link
+              to="/dashboard"
               className="mt-8 inline-flex items-center gap-2 text-primary transition-colors hover:text-primary/80"
             >
-              Start monitoring now
+              Explore the platform
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </motion.div>

@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Zap, Calendar } from "lucide-react";
+import { Menu, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
-  { label: "Why Parity?", href: "#why-parity" },
-  { label: "Products", href: "#products" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "FAQ", href: "#faq" },
+  { label: "About", href: "/about", isRoute: true },
+  { label: "Why Parity?", href: "#why-parity", isRoute: false },
+  { label: "Products", href: "#products", isRoute: false },
+  { label: "How it works", href: "#how-it-works", isRoute: false },
 ];
 
 export function Header() {
@@ -43,28 +43,38 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
-            >
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) =>
+            item.isRoute ? (
+              <Link
+                key={item.label}
+                to={item.href}
+                className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              >
+                {item.label}
+              </a>
+            )
+          )}
         </nav>
 
         {/* CTA Buttons & Theme Toggle */}
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Button
-            variant="outline"
-            className="rounded-full border-border/50 px-5 text-sm font-medium"
-            onClick={() => window.open('mailto:hello@parityai.com?subject=Book a Demo', '_blank')}
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            Book a Demo
-          </Button>
+          <Link to="/dashboard">
+            <Button
+              variant="outline"
+              className="rounded-full border-primary/50 px-5 text-sm font-medium"
+            >
+              Try Demo
+            </Button>
+          </Link>
           <Link to="/auth">
             <Button
               className="rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20"
@@ -86,27 +96,35 @@ export function Header() {
             <SheetContent side="right" className="w-[280px] border-border/50 bg-background/95 backdrop-blur-2xl">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <nav className="mt-8 flex flex-col gap-4">
-                {navItems.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className="text-lg text-muted-foreground transition-colors hover:text-foreground"
-                    onClick={() => setIsOpen(false)}
+                {navItems.map((item) =>
+                  item.isRoute ? (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className="text-lg text-muted-foreground transition-colors hover:text-foreground"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="text-lg text-muted-foreground transition-colors hover:text-foreground"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  )
+                )}
+                <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="mt-4 w-full rounded-full border-primary/50"
                   >
-                    {item.label}
-                  </a>
-                ))}
-                <Button
-                  variant="outline"
-                  className="mt-4 w-full rounded-full border-border/50"
-                  onClick={() => {
-                    window.open('mailto:hello@parityai.com?subject=Book a Demo', '_blank');
-                    setIsOpen(false);
-                  }}
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Book a Demo
-                </Button>
+                    Try Demo
+                  </Button>
+                </Link>
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
                   <Button className="w-full rounded-full bg-primary text-primary-foreground">
                     Get Started

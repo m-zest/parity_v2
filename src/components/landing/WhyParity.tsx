@@ -4,23 +4,23 @@ import { Shield, Zap, TrendingDown, Tv } from "lucide-react";
 const features = [
   {
     icon: Shield,
-    title: "Maximum Compliance",
-    description: "Your AI systems are protected with cutting-edge governance protocols.",
+    title: "EU AI Act Compliance",
+    description: "Purpose-built for Articles 9 & 13 — risk management and transparency requirements for public sector AI.",
   },
   {
     icon: Zap,
-    title: "Instant Audits",
-    description: "Execute your compliance audits in real-time, without delays.",
+    title: "Instant Transparency",
+    description: "Generate public-facing compliance reports that citizens and oversight bodies can actually read.",
   },
   {
     icon: TrendingDown,
-    title: "Reduced Risk",
-    description: "Benefit from industry-leading bias detection and mitigation.",
+    title: "Algorithmic Accountability",
+    description: "Detect bias, document decisions, and create audit trails for democratic oversight.",
   },
   {
     icon: Tv,
-    title: "Premium Interface",
-    description: "An elegant, intuitive design that's easy to use, even for beginners.",
+    title: "Open Source",
+    description: "Fully transparent codebase. No vendor lock-in. Deploy on your own infrastructure.",
   },
 ];
 
@@ -39,10 +39,10 @@ export function WhyParity() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="mb-4 text-4xl font-light text-foreground sm:text-5xl">
-            Why Choose Parity AI?
+            Built for Democratic Institutions
           </h2>
           <p className="mx-auto max-w-2xl text-muted-foreground">
-            Benefits designed to provide a seamless, secure, and accessible experience for all users.
+            When governments deploy AI, citizens deserve transparency. Parity AI provides the infrastructure for public accountability.
           </p>
         </motion.div>
 

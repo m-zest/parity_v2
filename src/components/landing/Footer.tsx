@@ -2,16 +2,22 @@ import { Link } from "react-router-dom";
 import { Zap } from "lucide-react";
 
 const navigation = [
-  { label: "Why Parity?", href: "#why-parity" },
-  { label: "Products", href: "#products" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "FAQ", href: "#faq" },
+  { label: "About", href: "/about", isRoute: true },
+  { label: "Try Demo", href: "/dashboard", isRoute: true },
+  { label: "Products", href: "#products", isRoute: false },
+  { label: "How it works", href: "#how-it-works", isRoute: false },
+];
+
+const resources = [
+  { label: "Documentation", href: "#" },
+  { label: "GitHub", href: "https://github.com/parity-ai" },
+  { label: "EU AI Act Guide", href: "#" },
 ];
 
 const socials = [
   { label: "Twitter (X)", href: "#" },
   { label: "LinkedIn", href: "#" },
-  { label: "GitHub", href: "#" },
+  { label: "GitHub", href: "https://github.com/parity-ai" },
 ];
 
 export function Footer() {
@@ -28,23 +34,51 @@ export function Footer() {
               <span className="text-lg font-semibold text-foreground">Parity AI</span>
             </Link>
             <p className="mb-8 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Secure, fast, and seamless AI governance.
+              Open infrastructure for democratic AI accountability.
               <br />
-              Parity AI makes compliance effortless.
+              Built for the EU AI Act. Free for public institutions.
             </p>
             <p className="text-sm text-muted-foreground">
-              Built with ❤️ by the Parity AI Team
+              Open Source | Apache 2.0 License
             </p>
           </div>
 
           {/* Navigation */}
-          <div className="md:col-span-3">
-            <h4 className="mb-4 text-sm font-medium text-foreground">Navigation</h4>
+          <div className="md:col-span-2">
+            <h4 className="mb-4 text-sm font-medium text-foreground">Platform</h4>
             <ul className="space-y-3">
               {navigation.map((item) => (
                 <li key={item.label}>
+                  {item.isRoute ? (
+                    <Link
+                      to={item.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {item.label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div className="md:col-span-2">
+            <h4 className="mb-4 text-sm font-medium text-foreground">Resources</h4>
+            <ul className="space-y-3">
+              {resources.map((item) => (
+                <li key={item.label}>
                   <a
                     href={item.href}
+                    target={item.href.startsWith('http') ? '_blank' : undefined}
+                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {item.label}
@@ -55,13 +89,15 @@ export function Footer() {
           </div>
 
           {/* Socials */}
-          <div className="md:col-span-3">
-            <h4 className="mb-4 text-sm font-medium text-foreground">Socials</h4>
+          <div className="md:col-span-2">
+            <h4 className="mb-4 text-sm font-medium text-foreground">Connect</h4>
             <ul className="space-y-3">
               {socials.map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
+                    target={item.href.startsWith('http') ? '_blank' : undefined}
+                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {item.label}
