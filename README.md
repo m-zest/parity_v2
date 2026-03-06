@@ -3,10 +3,17 @@
 **Enterprise AI Governance & Compliance Platform**
 
 [![Deploy Status](https://img.shields.io/badge/deploy-live-success)](https://parity-v2.vercel.app)
-[![License](https://img.shields.io/badge/license-proprietary-blue)]()
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![React](https://img.shields.io/badge/React-18.3-61dafb)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6)](https://typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-3ecf8e)](https://supabase.com)
+
+---
+
+## Author
+
+**Mohammad Zeeshan**
+Lead Developer & Architect
 
 ---
 
@@ -24,7 +31,19 @@ Parity AI is a comprehensive platform that enables organizations to govern AI sy
 
 ---
 
-## Product Modules
+## Product Suite
+
+| Product | Description | Status |
+|---------|-------------|--------|
+| **FairHire AI** | HR AI governance for hiring, screening, and workforce analytics | **Live** |
+| **MedParity** | Healthcare AI governance for clinical decisions and patient safety | **Live** |
+| **FinParity** | Financial AI governance for lending, credit, and underwriting | **Live** |
+| **ContentGuard** | Media AI governance for content moderation and recommendations | **Live** |
+| **Enterprise** | Cross-organization AI governance for enterprise-wide oversight | **Live** |
+
+---
+
+## Core Modules
 
 | Module | Description | Status |
 |--------|-------------|--------|
@@ -51,6 +70,9 @@ Parity AI is a comprehensive platform that enables organizations to govern AI sy
 | **Illinois AIVOIA** | Illinois, USA | AI video interview compliance |
 | **NIST AI RMF** | United States | AI risk management framework |
 | **ISO 42001** | International | AI management system standard |
+| **ECOA** | United States | Equal Credit Opportunity Act |
+| **HIPAA** | United States | Healthcare data privacy |
+| **FDA AI/ML** | United States | FDA guidelines for AI in healthcare |
 
 ---
 
@@ -66,6 +88,86 @@ Parity AI is a comprehensive platform that enables organizations to govern AI sy
 | **PDF Generation** | jsPDF, jsPDF-AutoTable |
 | **Data Import** | PapaParse (CSV) |
 | **Animations** | Framer Motion |
+
+---
+
+## Project Structure
+
+```
+parity-ai/
+├── docs/                       # Documentation
+├── public/                     # Static assets
+├── src/
+│   ├── components/             # Reusable UI components
+│   │   ├── auth/               # Authentication components
+│   │   ├── compliance/         # Compliance module components
+│   │   ├── dashboard/          # Dashboard widgets
+│   │   ├── incidents/          # Incident management components
+│   │   ├── landing/            # Landing page components
+│   │   ├── layout/             # App layout (sidebar, header)
+│   │   ├── models/             # Model management components
+│   │   ├── ui/                 # Base shadcn/ui components
+│   │   └── vendors/            # Vendor management components
+│   │
+│   ├── config/                 # App configuration
+│   │   └── index.ts            # Environment & feature flags
+│   │
+│   ├── constants/              # Application constants
+│   │   └── index.ts            # Routes, status values, etc.
+│   │
+│   ├── hooks/                  # React Query data hooks
+│   │   ├── useModels.ts        # Model CRUD + queries
+│   │   ├── useVendors.ts       # Vendor CRUD + queries
+│   │   ├── useIncidents.ts     # Incident management
+│   │   ├── useCompliance.ts    # Compliance data
+│   │   ├── useRisks.ts         # Risk register
+│   │   ├── useBiasTests.ts     # Bias testing results
+│   │   ├── useUseCases.ts      # Use case registry
+│   │   ├── useEvidence.ts      # Evidence management
+│   │   ├── useTasks.ts         # Task tracking
+│   │   └── useCurrentUser.ts   # User session
+│   │
+│   ├── integrations/           # External service clients
+│   │   └── supabase/           # Supabase client & types
+│   │
+│   ├── lib/                    # Utilities & report generators
+│   │   ├── generateModelsReport.ts
+│   │   ├── generateVendorsReport.ts
+│   │   ├── generateComplianceReport.ts
+│   │   ├── generateIncidentsReport.ts
+│   │   ├── generateRisksReport.ts
+│   │   └── generateExecutiveReport.ts
+│   │
+│   ├── pages/                  # Route components
+│   │   ├── products/           # Product-specific pages
+│   │   │   ├── FinParity.tsx   # Financial AI governance
+│   │   │   ├── MedParity.tsx   # Healthcare AI governance
+│   │   │   ├── ContentGuard.tsx # Media AI governance
+│   │   │   ├── Enterprise.tsx  # Enterprise governance
+│   │   │   └── index.ts        # Barrel exports
+│   │   ├── Dashboard.tsx
+│   │   ├── Models.tsx
+│   │   ├── Vendors.tsx
+│   │   ├── Compliance.tsx
+│   │   ├── Incidents.tsx
+│   │   └── ...
+│   │
+│   ├── services/               # Business logic services
+│   │
+│   ├── test/                   # Test utilities
+│   │
+│   ├── types/                  # TypeScript type definitions
+│   │   └── index.ts            # Common types
+│   │
+│   ├── App.tsx                 # Root component
+│   └── main.tsx                # Entry point
+│
+├── .env.example                # Environment template
+├── package.json
+├── tailwind.config.ts
+├── tsconfig.json
+└── vite.config.ts
+```
 
 ---
 
@@ -99,42 +201,7 @@ The application will be available at `http://localhost:8080`.
 
 ### Demo Mode
 
-The application includes built-in demo data for all modules, allowing immediate exploration without database configuration. Demo data is automatically loaded when database tables are unavailable.
-
----
-
-## Architecture
-
-```
-src/
-├── components/          # Reusable UI components
-│   ├── ui/             # Base shadcn/ui components
-│   ├── dashboard/      # Dashboard widgets
-│   ├── models/         # Model management
-│   ├── vendors/        # Vendor management
-│   ├── incidents/      # Incident tracking
-│   └── compliance/     # Compliance workflows
-├── hooks/              # React Query data hooks
-│   ├── useModels.ts    # Model CRUD + queries
-│   ├── useVendors.ts   # Vendor CRUD + queries
-│   ├── useIncidents.ts # Incident management
-│   ├── useCompliance.ts # Compliance data
-│   ├── useRisks.ts     # Risk register
-│   ├── useBiasTests.ts # Bias testing results
-│   ├── useUseCases.ts  # Use case registry
-│   ├── useEvidence.ts  # Evidence management
-│   └── useTasks.ts     # Task tracking
-├── lib/                # Utilities and report generators
-│   ├── generateModelsReport.ts
-│   ├── generateVendorsReport.ts
-│   ├── generateComplianceReport.ts
-│   ├── generateIncidentsReport.ts
-│   ├── generateRisksReport.ts
-│   └── generateExecutiveReport.ts
-├── pages/              # Route components
-└── integrations/       # External service clients
-    └── supabase/       # Supabase client + types
-```
+The application includes built-in demo data for all modules, allowing immediate exploration without database configuration.
 
 ---
 
@@ -228,6 +295,11 @@ CMD ["npm", "run", "preview"]
 
 ### Completed
 
+- [x] FairHire AI - HR AI Governance
+- [x] MedParity - Healthcare AI Governance
+- [x] FinParity - Financial AI Governance
+- [x] ContentGuard - Media AI Governance
+- [x] Enterprise - Cross-Organization Governance
 - [x] Model inventory with CRUD and CSV import
 - [x] Vendor management with risk scoring
 - [x] Incident management workflow
@@ -249,23 +321,29 @@ CMD ["npm", "run", "preview"]
 - [ ] Workflow automation
 - [ ] SSO/SAML authentication
 
-### Future
-
-- [ ] FairHire AI (HR-specific module)
-- [ ] MedParity (Healthcare AI compliance)
-- [ ] FinParity (Financial services AI)
-- [ ] ContentGuard (Content moderation AI)
-
 ---
 
 ## Contributing
 
-This is a proprietary product. For partnership inquiries, contact the development team.
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+For major changes, please open an issue first to discuss what you'd like to change.
+
+### Maintainer
+
+**Mohammad Zeeshan**
+GitHub: [@m-zest](https://github.com/m-zest)
 
 ---
 
 ## License
 
-Copyright 2024-2026 Parity AI. All rights reserved.
+MIT License - see [LICENSE](LICENSE) for details.
 
-This software is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
+Copyright (c) 2024-2026 **Mohammad Zeeshan**
