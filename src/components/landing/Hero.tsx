@@ -57,8 +57,7 @@ export function Hero() {
             <Link to="/dashboard">
               <Button
                 size="lg"
-                variant="outline"
-                className="group relative overflow-hidden rounded-full border-primary/50 px-8 py-6 text-base font-medium transition-all duration-300 hover:bg-primary/10 hover:border-primary"
+                className="group relative overflow-hidden rounded-full bg-primary px-8 py-6 text-base font-medium text-primary-foreground transition-all duration-300 hover:shadow-[0_0_32px_-4px_hsl(160_84%_54%/0.5)]"
               >
                 <span className="relative z-10 flex items-center">
                   Try Live Demo
@@ -66,17 +65,16 @@ export function Hero() {
                 </span>
               </Button>
             </Link>
-            <Link to="/auth">
-              <Button
-                size="lg"
-                className="group relative overflow-hidden rounded-full bg-primary px-8 py-6 text-base font-medium text-primary-foreground transition-all duration-300 hover:shadow-[0_0_32px_-4px_hsl(160_84%_54%/0.5)]"
-              >
-                <span className="relative z-10 flex items-center">
-                  Get Started Free
-                  <ArrowUpRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </span>
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="group relative overflow-hidden rounded-full border-primary/50 px-8 py-6 text-base font-medium transition-all duration-300 hover:bg-primary/10 hover:border-primary"
+              onClick={() => window.open('mailto:pilots@parityai.io?subject=Public Sector Pilot Inquiry', '_blank')}
+            >
+              <span className="relative z-10 flex items-center">
+                Request Pilot Access
+              </span>
+            </Button>
           </div>
 
           {/* Trust indicators */}
@@ -91,7 +89,7 @@ export function Hero() {
             </span>
             <span className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              No Login Required for Demo
+              Self-Hosted Option
             </span>
           </div>
 
