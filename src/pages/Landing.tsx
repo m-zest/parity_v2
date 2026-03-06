@@ -3,6 +3,7 @@ import { Hero } from "@/components/landing/Hero";
 import { KeyStats } from "@/components/landing/KeyStats";
 import { Tagline } from "@/components/landing/Tagline";
 import { WhyParity } from "@/components/landing/WhyParity";
+import { PublicSector } from "@/components/landing/PublicSector";
 import { ProductSuite } from "@/components/landing/ProductSuite";
 import { Integrations } from "@/components/landing/Integrations";
 import { ComplianceFrameworks } from "@/components/landing/ComplianceFrameworks";
@@ -20,6 +21,7 @@ const Landing = () => {
         <KeyStats />
         <Tagline />
         <WhyParity />
+        <PublicSector />
         <ProductSuite />
         <Integrations />
         <ComplianceFrameworks />

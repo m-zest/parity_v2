@@ -11,11 +11,11 @@ export function Tagline() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          Simplicity, performance, and security,
+          When citizens interact with AI,
           <br />
-          empowering you to navigate AI governance
+          they deserve to know how decisions are made.
           <br />
-          with confidence and agility.
+          <span className="text-primary">We build the tools that make that possible.</span>
         </motion.p>
       </div>
     </section>

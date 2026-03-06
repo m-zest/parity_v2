@@ -27,23 +27,35 @@ export function FinalCTA() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="mb-6 text-4xl font-light text-foreground sm:text-5xl md:text-6xl">
-            Ready to take control
+            AI Accountability
             <br />
-            of your AI?
+            Starts Here
           </h2>
           <p className="mx-auto mb-10 max-w-xl text-lg text-muted-foreground">
-            Join thousands of organizations who trust Parity AI for secure, seamless, and efficient AI governance.
+            Join public institutions building transparent, accountable AI systems. Free for government pilots. Open source forever.
           </p>
-          
-          <Link to="/auth">
-            <Button 
-              size="lg" 
-              className="group rounded-full bg-primary px-8 py-6 text-base font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_40px_-8px_hsl(160_84%_54%/0.5)]"
-            >
-              Get started now
-              <ArrowUpRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Button>
-          </Link>
+
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <Link to="/dashboard">
+              <Button
+                size="lg"
+                variant="outline"
+                className="group rounded-full border-primary/50 px-8 py-6 text-base font-medium transition-all duration-300 hover:bg-primary/10 hover:border-primary"
+              >
+                Try Live Demo
+                <ArrowUpRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button
+                size="lg"
+                className="group rounded-full bg-primary px-8 py-6 text-base font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_40px_-8px_hsl(160_84%_54%/0.5)]"
+              >
+                Get Started Free
+                <ArrowUpRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Button>
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>

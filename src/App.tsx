@@ -27,6 +27,7 @@ import FinParity from "./pages/products/FinParity";
 import MedParity from "./pages/products/MedParity";
 import ContentGuard from "./pages/products/ContentGuard";
 import Enterprise from "./pages/products/Enterprise";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Landing />} />
+            <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/products/:productId" element={<ComingSoon />} />
 
