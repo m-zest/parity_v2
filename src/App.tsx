@@ -23,10 +23,10 @@ import Policies from "./pages/Policies";
 import Transparency from "./pages/Transparency";
 import Incidents from "./pages/Incidents";
 import UserManagement from "./pages/UserManagement";
-import FinParity from "./pages/FinParity";
-import MedParity from "./pages/MedParity";
-import ContentGuard from "./pages/ContentGuard";
-import Enterprise from "./pages/Enterprise";
+import FinParity from "./pages/products/FinParity";
+import MedParity from "./pages/products/MedParity";
+import ContentGuard from "./pages/products/ContentGuard";
+import Enterprise from "./pages/products/Enterprise";
 
 const queryClient = new QueryClient();
 
