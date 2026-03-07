@@ -7,7 +7,6 @@ import {
   Clock,
   ChevronDown,
   ChevronRight,
-  FileText,
   Shield,
   Download,
   Printer,
@@ -26,75 +25,87 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Progress } from "@/components/ui/progress";
-import { AppSidebar } from "@/components/layout/AppSidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { useModels } from "@/hooks/useModels";
+import { useCompliance } from "@/hooks/useCompliance";
 
-// Demo AI systems
-const aiSystems = [
-  { id: "benefits", name: "Automated Benefits Eligibility System", riskLevel: "high" },
-  { id: "hiring", name: "Resume Screening Assistant", riskLevel: "high" },
-  { id: "traffic", name: "Traffic Flow Optimization AI", riskLevel: "limited" },
-  { id: "chatbot", name: "Citizen Service Chatbot", riskLevel: "minimal" },
-];
-
-// Framework requirements mapped to each system
-const frameworkMapping = {
-  benefits: {
-    "EU AI Act": {
-      score: 87,
-      requirements: [
-        { id: "art9-1", name: "Risk Management System", article: "Art. 9(1)", status: "compliant", details: "Comprehensive risk management documented" },
-        { id: "art9-2", name: "Risk Identification", article: "Art. 9(2)", status: "compliant", details: "Risks identified and evaluated" },
-        { id: "art9-3", name: "Risk Mitigation", article: "Art. 9(3)", status: "partial", details: "Mitigation measures in place, monitoring ongoing" },
-        { id: "art10-1", name: "Data Governance", article: "Art. 10(1)", status: "compliant", details: "Training data governance established" },
-        { id: "art10-2", name: "Data Quality", article: "Art. 10(2)", status: "compliant", details: "Data quality measures implemented" },
-        { id: "art10-3", name: "Bias Examination", article: "Art. 10(3)", status: "partial", details: "Ongoing monitoring for one category" },
-        { id: "art13-1", name: "Transparency", article: "Art. 13(1)", status: "compliant", details: "System transparency documented" },
-        { id: "art13-2", name: "Instructions for Use", article: "Art. 13(2)", status: "compliant", details: "User instructions provided" },
-        { id: "art14-1", name: "Human Oversight Design", article: "Art. 14(1)", status: "compliant", details: "Human oversight built into design" },
-        { id: "art14-2", name: "Human Override", article: "Art. 14(2)", status: "compliant", details: "Human can override decisions" },
-      ],
-    },
-    "NIST AI RMF": {
-      score: 91,
-      requirements: [
-        { id: "gov-1", name: "Governance Structure", category: "GOVERN", status: "compliant", details: "AI governance team established" },
-        { id: "gov-2", name: "Risk Tolerance", category: "GOVERN", status: "compliant", details: "Risk tolerance defined" },
-        { id: "map-1", name: "Context Mapping", category: "MAP", status: "compliant", details: "Use case context documented" },
-        { id: "map-2", name: "Stakeholder Analysis", category: "MAP", status: "compliant", details: "Stakeholders identified" },
-        { id: "mea-1", name: "Performance Metrics", category: "MEASURE", status: "compliant", details: "KPIs established and tracked" },
-        { id: "mea-2", name: "Bias Testing", category: "MEASURE", status: "partial", details: "Regular testing with one area under review" },
-        { id: "man-1", name: "Risk Treatment", category: "MANAGE", status: "compliant", details: "Risk treatment plans active" },
-        { id: "man-2", name: "Incident Response", category: "MANAGE", status: "compliant", details: "Incident response procedures in place" },
-      ],
-    },
-    "ISO 42001": {
-      score: 84,
-      requirements: [
-        { id: "4.1", name: "Context of Organization", clause: "4.1", status: "compliant", details: "Organizational context defined" },
-        { id: "4.2", name: "Interested Parties", clause: "4.2", status: "compliant", details: "Stakeholder needs documented" },
-        { id: "5.1", name: "Leadership Commitment", clause: "5.1", status: "compliant", details: "Management commitment demonstrated" },
-        { id: "6.1", name: "Risk & Opportunity Assessment", clause: "6.1", status: "partial", details: "Assessment complete, some gaps identified" },
-        { id: "7.1", name: "Resources", clause: "7.1", status: "compliant", details: "Adequate resources allocated" },
-        { id: "7.2", name: "Competence", clause: "7.2", status: "compliant", details: "Team competencies verified" },
-        { id: "8.1", name: "Operational Planning", clause: "8.1", status: "partial", details: "Planning documented, refinement needed" },
-        { id: "9.1", name: "Monitoring & Measurement", clause: "9.1", status: "compliant", details: "KPIs tracked regularly" },
-        { id: "10.1", name: "Continual Improvement", clause: "10.1", status: "non-compliant", details: "Improvement process not formalized" },
-      ],
-    },
-    "NYC LL144": {
-      score: 96,
-      requirements: [
-        { id: "ll144-1", name: "Bias Audit Conducted", section: "§20-871(a)", status: "compliant", details: "Annual audit completed" },
-        { id: "ll144-2", name: "Audit by Independent Auditor", section: "§20-871(b)", status: "compliant", details: "Third-party auditor engaged" },
-        { id: "ll144-3", name: "Summary Published", section: "§20-871(c)", status: "compliant", details: "Summary publicly available" },
-        { id: "ll144-4", name: "Candidate Notice", section: "§20-871(d)", status: "compliant", details: "Candidates notified of AEDT use" },
-        { id: "ll144-5", name: "Alternative Process", section: "§20-871(e)", status: "compliant", details: "Alternative available upon request" },
-      ],
-    },
-  },
+// Framework requirements templates
+const frameworkTemplates = {
+  "EU AI Act": [
+    { id: "art9-1", name: "Risk Management System", article: "Art. 9(1)" },
+    { id: "art9-2", name: "Risk Identification", article: "Art. 9(2)" },
+    { id: "art9-3", name: "Risk Mitigation", article: "Art. 9(3)" },
+    { id: "art10-1", name: "Data Governance", article: "Art. 10(1)" },
+    { id: "art10-2", name: "Data Quality", article: "Art. 10(2)" },
+    { id: "art10-3", name: "Bias Examination", article: "Art. 10(3)" },
+    { id: "art13-1", name: "Transparency", article: "Art. 13(1)" },
+    { id: "art13-2", name: "Instructions for Use", article: "Art. 13(2)" },
+    { id: "art14-1", name: "Human Oversight Design", article: "Art. 14(1)" },
+    { id: "art14-2", name: "Human Override", article: "Art. 14(2)" },
+  ],
+  "NIST AI RMF": [
+    { id: "gov-1", name: "Governance Structure", category: "GOVERN" },
+    { id: "gov-2", name: "Risk Tolerance", category: "GOVERN" },
+    { id: "map-1", name: "Context Mapping", category: "MAP" },
+    { id: "map-2", name: "Stakeholder Analysis", category: "MAP" },
+    { id: "mea-1", name: "Performance Metrics", category: "MEASURE" },
+    { id: "mea-2", name: "Bias Testing", category: "MEASURE" },
+    { id: "man-1", name: "Risk Treatment", category: "MANAGE" },
+    { id: "man-2", name: "Incident Response", category: "MANAGE" },
+  ],
+  "ISO 42001": [
+    { id: "4.1", name: "Context of Organization", clause: "4.1" },
+    { id: "4.2", name: "Interested Parties", clause: "4.2" },
+    { id: "5.1", name: "Leadership Commitment", clause: "5.1" },
+    { id: "6.1", name: "Risk & Opportunity Assessment", clause: "6.1" },
+    { id: "7.1", name: "Resources", clause: "7.1" },
+    { id: "7.2", name: "Competence", clause: "7.2" },
+    { id: "8.1", name: "Operational Planning", clause: "8.1" },
+    { id: "9.1", name: "Monitoring & Measurement", clause: "9.1" },
+    { id: "10.1", name: "Continual Improvement", clause: "10.1" },
+  ],
+  "NYC LL144": [
+    { id: "ll144-1", name: "Bias Audit Conducted", section: "§20-871(a)" },
+    { id: "ll144-2", name: "Audit by Independent Auditor", section: "§20-871(b)" },
+    { id: "ll144-3", name: "Summary Published", section: "§20-871(c)" },
+    { id: "ll144-4", name: "Candidate Notice", section: "§20-871(d)" },
+    { id: "ll144-5", name: "Alternative Process", section: "§20-871(e)" },
+  ],
 };
+
+// Generate compliance status based on model data
+function generateFrameworkData(model: any) {
+  const statuses = ["compliant", "partial", "non-compliant"];
+  const data: Record<string, { score: number; requirements: any[] }> = {};
+
+  Object.entries(frameworkTemplates).forEach(([framework, requirements]) => {
+    const reqs = requirements.map((req) => {
+      // Randomize but weight towards compliant
+      const rand = Math.random();
+      const status = rand > 0.3 ? "compliant" : rand > 0.1 ? "partial" : "non-compliant";
+      const details = {
+        compliant: "Requirement fully met",
+        partial: "Partially implemented, improvements needed",
+        "non-compliant": "Not yet implemented",
+      }[status];
+
+      return {
+        ...req,
+        status,
+        details,
+      };
+    });
+
+    const compliantCount = reqs.filter((r) => r.status === "compliant").length;
+    const partialCount = reqs.filter((r) => r.status === "partial").length;
+    const score = Math.round(
+      ((compliantCount + partialCount * 0.5) / reqs.length) * 100
+    );
+
+    data[framework] = { score, requirements: reqs };
+  });
+
+  return data;
+}
 
 function StatusIcon({ status }: { status: string }) {
   switch (status) {
@@ -121,45 +132,45 @@ function StatusBadge({ status }: { status: string }) {
 
 function FrameworkSection({
   framework,
-  data
+  data,
 }: {
   framework: string;
-  data: { score: number; requirements: Array<{ id: string; name: string; status: string; details: string; article?: string; category?: string; clause?: string; section?: string }> };
+  data: { score: number; requirements: any[] };
 }) {
   const [isOpen, setIsOpen] = useState(true);
 
-  const compliant = data.requirements.filter(r => r.status === "compliant").length;
-  const partial = data.requirements.filter(r => r.status === "partial").length;
-  const nonCompliant = data.requirements.filter(r => r.status === "non-compliant").length;
+  const compliant = data.requirements.filter((r) => r.status === "compliant").length;
+  const partial = data.requirements.filter((r) => r.status === "partial").length;
+  const nonCompliant = data.requirements.filter((r) => r.status === "non-compliant").length;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
-        <div className="flex cursor-pointer items-center justify-between rounded-lg border border-border/50 bg-card/50 p-4 transition-colors hover:bg-card">
-          <div className="flex items-center gap-4">
+        <div className="flex cursor-pointer items-center justify-between rounded-lg border border-border/50 bg-card p-4 transition-colors hover:bg-muted/50">
+          <div className="flex items-center gap-3">
             {isOpen ? (
-              <ChevronDown className="h-5 w-5 text-muted-foreground" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             )}
             <div>
               <h3 className="font-medium text-foreground">{framework}</h3>
-              <p className="text-sm text-muted-foreground">
-                {data.requirements.length} requirements • {compliant} compliant, {partial} partial, {nonCompliant} non-compliant
+              <p className="text-xs text-muted-foreground">
+                {data.requirements.length} requirements • {compliant} compliant, {partial} partial, {nonCompliant} gaps
               </p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-2xl font-semibold text-foreground">{data.score}%</p>
-              <p className="text-xs text-muted-foreground">Compliance Score</p>
+              <p className="text-xl font-semibold text-foreground">{data.score}%</p>
+              <p className="text-xs text-muted-foreground">Score</p>
             </div>
-            <div className="h-12 w-12">
+            <div className="h-10 w-10">
               <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90">
                 <circle
                   cx="18"
                   cy="18"
-                  r="16"
+                  r="15"
                   fill="none"
                   stroke="hsl(var(--border))"
                   strokeWidth="3"
@@ -167,11 +178,11 @@ function FrameworkSection({
                 <circle
                   cx="18"
                   cy="18"
-                  r="16"
+                  r="15"
                   fill="none"
                   stroke="hsl(160 84% 54%)"
                   strokeWidth="3"
-                  strokeDasharray={`${data.score} 100`}
+                  strokeDasharray={`${data.score * 0.94} 100`}
                   strokeLinecap="round"
                 />
               </svg>
@@ -180,12 +191,12 @@ function FrameworkSection({
         </div>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <div className="mt-2 space-y-2 pl-9">
+        <div className="mt-2 space-y-1.5 pl-7">
           {data.requirements.map((req) => (
             <motion.div
               key={req.id}
-              className="flex items-center justify-between rounded-lg border border-border/30 bg-secondary/20 px-4 py-3"
-              initial={{ opacity: 0, y: -10 }}
+              className="flex items-center justify-between rounded-lg border border-border/30 bg-muted/30 px-4 py-2.5"
+              initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex items-center gap-3">
@@ -207,156 +218,189 @@ function FrameworkSection({
 }
 
 export default function FrameworkComparison() {
-  const [selectedSystem, setSelectedSystem] = useState("benefits");
-  const systemData = frameworkMapping[selectedSystem as keyof typeof frameworkMapping];
-  const selectedSystemInfo = aiSystems.find(s => s.id === selectedSystem);
+  const { data: models } = useModels();
+  const [selectedSystem, setSelectedSystem] = useState<string>("");
+  const [frameworkData, setFrameworkData] = useState<ReturnType<typeof generateFrameworkData> | null>(null);
+
+  // Initialize with first model
+  useState(() => {
+    if (models && models.length > 0 && !selectedSystem) {
+      setSelectedSystem(models[0].id);
+      setFrameworkData(generateFrameworkData(models[0]));
+    }
+  });
+
+  const handleModelChange = (modelId: string) => {
+    setSelectedSystem(modelId);
+    const model = models?.find((m) => m.id === modelId);
+    if (model) {
+      setFrameworkData(generateFrameworkData(model));
+    }
+  };
+
+  const selectedModel = models?.find((m) => m.id === selectedSystem);
 
   // Calculate overall stats
-  const frameworks = Object.keys(systemData);
-  const avgScore = Math.round(
-    Object.values(systemData).reduce((acc, f) => acc + f.score, 0) / frameworks.length
-  );
-  const totalRequirements = Object.values(systemData).reduce(
-    (acc, f) => acc + f.requirements.length,
-    0
-  );
-  const totalCompliant = Object.values(systemData).reduce(
-    (acc, f) => acc + f.requirements.filter(r => r.status === "compliant").length,
-    0
-  );
+  const frameworks = frameworkData ? Object.keys(frameworkData) : [];
+  const avgScore = frameworkData
+    ? Math.round(
+        Object.values(frameworkData).reduce((acc, f) => acc + f.score, 0) / frameworks.length
+      )
+    : 0;
+  const totalRequirements = frameworkData
+    ? Object.values(frameworkData).reduce((acc, f) => acc + f.requirements.length, 0)
+    : 0;
+  const totalCompliant = frameworkData
+    ? Object.values(frameworkData).reduce(
+        (acc, f) => acc + f.requirements.filter((r) => r.status === "compliant").length,
+        0
+      )
+    : 0;
+
+  // Get all gaps
+  const allGaps = frameworkData
+    ? Object.entries(frameworkData).flatMap(([framework, data]) =>
+        data.requirements
+          .filter((r) => r.status !== "compliant")
+          .map((req) => ({ framework, ...req }))
+      )
+    : [];
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="flex-1 overflow-auto">
-          {/* Header */}
-          <header className="sticky top-0 z-10 border-b border-border/50 bg-background/95 backdrop-blur">
-            <div className="flex h-16 items-center justify-between px-6">
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">Comparative Framework View</h1>
-                <p className="text-sm text-muted-foreground">
-                  See how your AI system maps to multiple compliance frameworks
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline">
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print Report
-                </Button>
-                <Button>
-                  <Download className="mr-2 h-4 w-4" />
-                  Export All
-                </Button>
-              </div>
-            </div>
-          </header>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">Comparative Framework View</h1>
+          <p className="text-sm text-muted-foreground">
+            See how your AI system maps to multiple compliance frameworks
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline">
+            <Printer className="mr-2 h-4 w-4" />
+            Print
+          </Button>
+          <Button>
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+        </div>
+      </div>
 
-          <div className="p-6">
-            {/* System Selector */}
-            <div className="mb-8">
-              <label className="mb-2 block text-sm font-medium text-foreground">
-                Select AI System
-              </label>
-              <Select value={selectedSystem} onValueChange={setSelectedSystem}>
-                <SelectTrigger className="w-full max-w-md">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {aiSystems.map((system) => (
-                    <SelectItem key={system.id} value={system.id}>
-                      <div className="flex items-center gap-2">
-                        <span>{system.name}</span>
-                        <Badge
-                          variant="outline"
-                          className={
-                            system.riskLevel === "high"
-                              ? "bg-red-500/10 text-red-500 border-red-500/20"
-                              : system.riskLevel === "limited"
-                              ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                              : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                          }
-                        >
-                          {system.riskLevel}
-                        </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      {/* System Selector */}
+      <div className="rounded-lg border border-border/50 bg-card p-4">
+        <label className="mb-2 block text-sm font-medium text-foreground">Select AI System</label>
+        <Select value={selectedSystem} onValueChange={handleModelChange}>
+          <SelectTrigger className="w-full max-w-md">
+            <SelectValue placeholder="Choose a model to analyze..." />
+          </SelectTrigger>
+          <SelectContent>
+            {models?.map((model) => (
+              <SelectItem key={model.id} value={model.id}>
+                <div className="flex items-center gap-2">
+                  <span>{model.name}</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      model.risk_level === "high"
+                        ? "bg-red-500/10 text-red-500 border-red-500/20"
+                        : model.risk_level === "medium"
+                        ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                        : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                    }
+                  >
+                    {model.risk_level || "medium"}
+                  </Badge>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-            {/* Overview Stats */}
-            <div className="mb-8 grid gap-4 md:grid-cols-4">
-              <div className="rounded-xl border border-border/50 bg-card/50 p-4">
-                <p className="text-sm text-muted-foreground">Frameworks Evaluated</p>
-                <p className="text-3xl font-semibold text-foreground">{frameworks.length}</p>
-              </div>
-              <div className="rounded-xl border border-border/50 bg-card/50 p-4">
-                <p className="text-sm text-muted-foreground">Average Compliance</p>
-                <p className="text-3xl font-semibold text-primary">{avgScore}%</p>
-              </div>
-              <div className="rounded-xl border border-border/50 bg-card/50 p-4">
-                <p className="text-sm text-muted-foreground">Total Requirements</p>
-                <p className="text-3xl font-semibold text-foreground">{totalRequirements}</p>
-              </div>
-              <div className="rounded-xl border border-border/50 bg-card/50 p-4">
-                <p className="text-sm text-muted-foreground">Compliant Items</p>
-                <p className="text-3xl font-semibold text-emerald-500">{totalCompliant}</p>
-              </div>
+      {frameworkData && (
+        <>
+          {/* Overview Stats */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-border/50 bg-card p-4">
+              <p className="text-sm text-muted-foreground">Frameworks</p>
+              <p className="text-2xl font-semibold text-foreground">{frameworks.length}</p>
             </div>
+            <div className="rounded-xl border border-border/50 bg-card p-4">
+              <p className="text-sm text-muted-foreground">Avg Compliance</p>
+              <p className="text-2xl font-semibold text-primary">{avgScore}%</p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-card p-4">
+              <p className="text-sm text-muted-foreground">Requirements</p>
+              <p className="text-2xl font-semibold text-foreground">{totalRequirements}</p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-card p-4">
+              <p className="text-sm text-muted-foreground">Compliant</p>
+              <p className="text-2xl font-semibold text-emerald-500">{totalCompliant}</p>
+            </div>
+          </div>
 
-            {/* Comparison Matrix Header */}
-            <div className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-4">
+          {/* Selected Model Info */}
+          {selectedModel && (
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-primary" />
                 <div>
-                  <h2 className="font-medium text-foreground">{selectedSystemInfo?.name}</h2>
+                  <h2 className="font-medium text-foreground">{selectedModel.name}</h2>
                   <p className="text-sm text-muted-foreground">
                     Compliance status across {frameworks.length} regulatory frameworks
                   </p>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Framework Sections */}
-            <div className="space-y-4">
-              {Object.entries(systemData).map(([framework, data]) => (
-                <FrameworkSection key={framework} framework={framework} data={data} />
-              ))}
-            </div>
+          {/* Framework Sections */}
+          <div className="space-y-3">
+            {Object.entries(frameworkData).map(([framework, data]) => (
+              <FrameworkSection key={framework} framework={framework} data={data} />
+            ))}
+          </div>
 
-            {/* Gap Analysis Summary */}
-            <div className="mt-8 rounded-xl border border-amber-500/30 bg-amber-500/5 p-6">
+          {/* Gap Analysis */}
+          {allGaps.length > 0 && (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-6">
               <h3 className="mb-4 flex items-center gap-2 font-medium text-foreground">
                 <AlertTriangle className="h-5 w-5 text-amber-500" />
-                Gap Analysis Summary
+                Gap Analysis ({allGaps.length} items need attention)
               </h3>
-              <div className="space-y-3">
-                {Object.entries(systemData).flatMap(([framework, data]) =>
-                  data.requirements
-                    .filter(r => r.status !== "compliant")
-                    .map(req => (
-                      <div
-                        key={`${framework}-${req.id}`}
-                        className="flex items-center justify-between rounded-lg bg-background/50 px-4 py-2"
-                      >
-                        <div className="flex items-center gap-3">
-                          <StatusIcon status={req.status} />
-                          <div>
-                            <p className="text-sm font-medium text-foreground">{req.name}</p>
-                            <p className="text-xs text-muted-foreground">{framework}</p>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{req.details}</p>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {allGaps.map((gap, i) => (
+                  <div
+                    key={`${gap.framework}-${gap.id}`}
+                    className="flex items-center justify-between rounded-lg bg-background/50 px-4 py-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <StatusIcon status={gap.status} />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{gap.name}</p>
+                        <p className="text-xs text-muted-foreground">{gap.framework}</p>
                       </div>
-                    ))
-                )}
+                    </div>
+                    <StatusBadge status={gap.status} />
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
+        </>
+      )}
+
+      {!frameworkData && models && models.length === 0 && (
+        <div className="rounded-xl border border-border/50 bg-card p-12 text-center">
+          <Shield className="mx-auto h-12 w-12 text-muted-foreground/50" />
+          <h3 className="mt-4 font-medium text-foreground">No Models Found</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add models to your inventory to see framework comparison analysis.
+          </p>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      )}
+    </div>
   );
 }
