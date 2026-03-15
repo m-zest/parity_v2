@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type EvidenceType = "document" | "screenshot" | "audit_report" | "certification" | "test_result" | "other";
@@ -43,38 +44,42 @@ export interface EvidenceUpdate extends Partial<EvidenceInsert> {
   id: string;
 }
 
-const DEMO_EVIDENCE: Evidence[] = [
-  {
-    id: "demo-1", organization_id: "demo-org", name: "SOC 2 Type II Certification",
-    description: "Annual SOC 2 compliance certification", file_url: null, file_type: "pdf",
-    file_size: 2457600, evidence_type: "certification", category: "Compliance",
-    model_id: null, vendor_id: null, assessment_id: null, uploaded_by: null,
-    expires_at: "2027-03-15", created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-    profiles: { full_name: "Sarah Johnson" },
-  },
-  {
-    id: "demo-2", organization_id: "demo-org", name: "Bias Audit Report - Q4 2025",
-    description: "Quarterly bias testing results", file_url: null, file_type: "pdf",
-    file_size: 1843200, evidence_type: "audit_report", category: "Fairness",
-    model_id: null, vendor_id: null, assessment_id: null, uploaded_by: null,
-    expires_at: null, created_at: new Date(Date.now() - 604800000).toISOString(),
-    updated_at: new Date(Date.now() - 604800000).toISOString(),
-    profiles: { full_name: "Michael Chen" },
-  },
-];
-
 export function useEvidence() {
   return useQuery({
     queryKey: ["evidence"],
-    queryFn: async () => DEMO_EVIDENCE,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("evidence")
+        .select("*, profiles!evidence_uploaded_by_fkey(full_name), models(name), vendors(name)")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as unknown as Evidence[];
+    },
   });
 }
 
 export function useCreateEvidence() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_evidence: EvidenceInsert) => {
-      throw new Error("Database table 'evidence' not yet created");
+    mutationFn: async (evidence: EvidenceInsert) => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id, id")
+        .single();
+
+      const { data, error } = await supabase
+        .from("evidence")
+        .insert({
+          ...evidence,
+          organization_id: profile?.organization_id ?? "",
+          uploaded_by: profile?.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evidence"] });
@@ -87,8 +92,16 @@ export function useCreateEvidence() {
 export function useUpdateEvidence() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_update: EvidenceUpdate) => {
-      throw new Error("Database table 'evidence' not yet created");
+    mutationFn: async ({ id, ...updates }: EvidenceUpdate) => {
+      const { data, error } = await supabase
+        .from("evidence")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evidence"] });
@@ -101,8 +114,9 @@ export function useUpdateEvidence() {
 export function useDeleteEvidence() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_id: string) => {
-      throw new Error("Database table 'evidence' not yet created");
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("evidence").delete().eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evidence"] });
@@ -112,21 +126,66 @@ export function useDeleteEvidence() {
   });
 }
 
-export async function uploadEvidenceFile(_file: File): Promise<{ url: string; path: string } | null> {
-  console.warn("Evidence storage not yet configured");
-  return null;
+export async function uploadEvidenceFile(file: File): Promise<{ url: string; path: string } | null> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("organization_id")
+    .single();
+
+  if (!profile?.organization_id) return null;
+
+  const filePath = `${profile.organization_id}/${Date.now()}-${file.name}`;
+  const { error } = await supabase.storage
+    .from("evidence")
+    .upload(filePath, file);
+
+  if (error) {
+    toast.error("Failed to upload file: " + error.message);
+    return null;
+  }
+
+  const { data: urlData } = supabase.storage
+    .from("evidence")
+    .getPublicUrl(filePath);
+
+  return { url: urlData.publicUrl, path: filePath };
 }
 
-export async function getEvidenceFileUrl(_filePath: string): Promise<string | null> {
-  console.warn("Evidence storage not yet configured");
-  return null;
+export async function getEvidenceFileUrl(filePath: string): Promise<string | null> {
+  const { data } = supabase.storage
+    .from("evidence")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
 }
 
 export function useUploadEvidence() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_params: { file: File; evidence: EvidenceInsert }) => {
-      throw new Error("Database table 'evidence' not yet created");
+    mutationFn: async ({ file, evidence }: { file: File; evidence: EvidenceInsert }) => {
+      const uploaded = await uploadEvidenceFile(file);
+      if (!uploaded) throw new Error("File upload failed");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id, id")
+        .single();
+
+      const { data, error } = await supabase
+        .from("evidence")
+        .insert({
+          ...evidence,
+          file_url: uploaded.url,
+          file_size: file.size,
+          file_type: file.name.split(".").pop() || null,
+          organization_id: profile?.organization_id ?? "",
+          uploaded_by: profile?.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evidence"] });
