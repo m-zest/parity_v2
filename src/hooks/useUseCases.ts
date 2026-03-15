@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type UseCaseStatus = "not_started" | "in_progress" | "completed" | "on_hold";
@@ -45,42 +46,38 @@ export interface UseCaseUpdate extends Partial<UseCaseInsert> {
   id: string;
 }
 
-const DEMO_USE_CASES: UseCase[] = [
-  {
-    id: "demo-1", organization_id: "demo-org", name: "Customer Support Chatbot",
-    description: "AI-powered chatbot for handling customer inquiries",
-    status: "in_progress", progress: 75, risk_level: "medium",
-    department: "Customer Service", owner_id: null, owner_name: "Sarah Johnson",
-    model_id: null, vendor_id: null,
-    business_justification: "Reduce support ticket volume by 40%",
-    target_completion_date: "2026-06-30",
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-2", organization_id: "demo-org", name: "Fraud Detection System",
-    description: "ML model for real-time transaction fraud detection",
-    status: "completed", progress: 100, risk_level: "high",
-    department: "Finance", owner_id: null, owner_name: "Michael Chen",
-    model_id: null, vendor_id: null,
-    business_justification: "Prevent $2M annual fraud losses",
-    target_completion_date: "2026-03-01",
-    created_at: new Date(Date.now() - 2592000000).toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
 export function useUseCases() {
   return useQuery({
     queryKey: ["use-cases"],
-    queryFn: async () => DEMO_USE_CASES,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("use_cases")
+        .select("*, profiles!use_cases_owner_id_fkey(full_name), models(name), vendors(name)")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as unknown as UseCase[];
+    },
   });
 }
 
 export function useCreateUseCase() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_useCase: UseCaseInsert) => {
-      throw new Error("Database table 'use_cases' not yet created");
+    mutationFn: async (useCase: UseCaseInsert) => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .single();
+
+      const { data, error } = await supabase
+        .from("use_cases")
+        .insert({ ...useCase, organization_id: profile?.organization_id ?? "" })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["use-cases"] });
@@ -93,8 +90,16 @@ export function useCreateUseCase() {
 export function useUpdateUseCase() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_update: UseCaseUpdate) => {
-      throw new Error("Database table 'use_cases' not yet created");
+    mutationFn: async ({ id, ...updates }: UseCaseUpdate) => {
+      const { data, error } = await supabase
+        .from("use_cases")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["use-cases"] });
@@ -107,8 +112,9 @@ export function useUpdateUseCase() {
 export function useDeleteUseCase() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_id: string) => {
-      throw new Error("Database table 'use_cases' not yet created");
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("use_cases").delete().eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["use-cases"] });

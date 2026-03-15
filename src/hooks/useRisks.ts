@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type RiskSeverity = "negligible" | "minor" | "moderate" | "major" | "critical";
@@ -48,45 +49,38 @@ export interface RiskUpdate extends Partial<RiskInsert> {
   id: string;
 }
 
-const DEMO_RISKS: Risk[] = [
-  {
-    id: "demo-1", organization_id: "demo-org", title: "Model Bias in Hiring Algorithm",
-    description: "Potential demographic bias detected", category: "Fairness",
-    severity: "critical", likelihood: "medium", impact: "Regulatory fines",
-    mitigation_status: "in_progress", mitigation_plan: "Conduct bias audit",
-    owner_id: null, model_id: null, vendor_id: null,
-    identified_date: new Date(Date.now() - 604800000).toISOString(),
-    review_date: new Date(Date.now() + 604800000).toISOString(),
-    created_at: new Date(Date.now() - 604800000).toISOString(),
-    updated_at: new Date().toISOString(),
-    profiles: { full_name: "Sarah Johnson" },
-  },
-  {
-    id: "demo-2", organization_id: "demo-org", title: "Data Privacy Compliance Gap",
-    description: "Training data may contain PII", category: "Privacy",
-    severity: "major", likelihood: "high", impact: "GDPR violation penalties",
-    mitigation_status: "not_started", mitigation_plan: "Audit training datasets",
-    owner_id: null, model_id: null, vendor_id: null,
-    identified_date: new Date(Date.now() - 259200000).toISOString(),
-    review_date: new Date(Date.now() + 1209600000).toISOString(),
-    created_at: new Date(Date.now() - 259200000).toISOString(),
-    updated_at: new Date().toISOString(),
-    profiles: { full_name: "Michael Chen" },
-  },
-];
-
 export function useRisks() {
   return useQuery({
     queryKey: ["risks"],
-    queryFn: async () => DEMO_RISKS,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("risks")
+        .select("*, profiles!risks_owner_id_fkey(full_name), models(name), vendors(name)")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as unknown as Risk[];
+    },
   });
 }
 
 export function useCreateRisk() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_risk: RiskInsert) => {
-      throw new Error("Database table 'risks' not yet created");
+    mutationFn: async (risk: RiskInsert) => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("organization_id")
+        .single();
+
+      const { data, error } = await supabase
+        .from("risks")
+        .insert({ ...risk, organization_id: profile?.organization_id ?? "" })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["risks"] });
@@ -99,8 +93,16 @@ export function useCreateRisk() {
 export function useUpdateRisk() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_update: RiskUpdate) => {
-      throw new Error("Database table 'risks' not yet created");
+    mutationFn: async ({ id, ...updates }: RiskUpdate) => {
+      const { data, error } = await supabase
+        .from("risks")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["risks"] });
@@ -113,8 +115,9 @@ export function useUpdateRisk() {
 export function useDeleteRisk() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_id: string) => {
-      throw new Error("Database table 'risks' not yet created");
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("risks").delete().eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["risks"] });

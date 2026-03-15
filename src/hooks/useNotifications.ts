@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type NotificationType =
@@ -19,55 +20,72 @@ export interface Notification {
   created_at: string;
 }
 
-const DEMO_NOTIFICATIONS: Notification[] = [
-  {
-    id: "n-1", organization_id: "demo-org", user_id: "demo",
-    type: "incident_reported", title: "Critical Incident Reported",
-    message: "A new critical severity incident has been reported for the Credit Scoring Model",
-    link: "/incidents", is_read: false, entity_type: "incident", entity_id: "demo-1",
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: "n-2", organization_id: "demo-org", user_id: "demo",
-    type: "deadline_approaching", title: "EU AI Act Assessment Due Soon",
-    message: "Your EU AI Act compliance assessment is due in 5 days",
-    link: "/compliance", is_read: false, entity_type: "assessment", entity_id: "demo-2",
-    created_at: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: "n-3", organization_id: "demo-org", user_id: "demo",
-    type: "task_assigned", title: "New Task Assigned",
-    message: "You have been assigned: Complete bias audit for credit model",
-    link: "/tasks", is_read: true, entity_type: "task", entity_id: "demo-1",
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "n-4", organization_id: "demo-org", user_id: "demo",
-    type: "policy_updated", title: "Policy Updated",
-    message: "AI Ethics & Responsible Use Policy has been updated to v2.1",
-    link: "/policies", is_read: true, entity_type: "policy", entity_id: "demo-1",
-    created_at: new Date(Date.now() - 172800000).toISOString(),
-  },
-];
-
 export function useNotifications() {
   return useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => DEMO_NOTIFICATIONS,
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return [];
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.user.id)
+        .single();
+
+      if (!profile) return [];
+
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      return (data ?? []) as Notification[];
+    },
   });
 }
 
 export function useUnreadNotificationsCount() {
   return useQuery({
     queryKey: ["notifications-unread-count"],
-    queryFn: async () => DEMO_NOTIFICATIONS.filter(n => !n.is_read).length,
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return 0;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.user.id)
+        .single();
+
+      if (!profile) return 0;
+
+      const { count, error } = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", profile.id)
+        .eq("is_read", false);
+
+      if (error) throw error;
+      return count ?? 0;
+    },
   });
 }
 
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_id: string) => { /* demo */ },
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("id", id);
+
+      if (error) throw error;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
@@ -78,7 +96,26 @@ export function useMarkNotificationRead() {
 export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => { /* demo */ },
+    mutationFn: async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.user.id)
+        .single();
+
+      if (!profile) return;
+
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("user_id", profile.id)
+        .eq("is_read", false);
+
+      if (error) throw error;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
@@ -90,7 +127,10 @@ export function useMarkAllNotificationsRead() {
 export function useDeleteNotification() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (_id: string) => { /* demo */ },
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("notifications").delete().eq("id", id);
+      if (error) throw error;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications-unread-count"] });
@@ -99,5 +139,6 @@ export function useDeleteNotification() {
 }
 
 export function useNotificationsRealtime() {
-  // No-op for demo
+  // Realtime subscription can be added here if needed
+  // For now the polling from React Query is sufficient
 }

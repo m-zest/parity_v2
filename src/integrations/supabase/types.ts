@@ -459,6 +459,605 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          id: string
+          organization_id: string
+          title: string
+          description: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          priority: Database["public"]["Enums"]["task_priority"]
+          category: string | null
+          assignee_id: string | null
+          due_date: string | null
+          model_id: string | null
+          vendor_id: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          title: string
+          description?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          priority?: Database["public"]["Enums"]["task_priority"]
+          category?: string | null
+          assignee_id?: string | null
+          due_date?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          title?: string
+          description?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          priority?: Database["public"]["Enums"]["task_priority"]
+          category?: string | null
+          assignee_id?: string | null
+          due_date?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risks: {
+        Row: {
+          id: string
+          organization_id: string
+          title: string
+          description: string | null
+          category: string | null
+          severity: Database["public"]["Enums"]["risk_severity"]
+          likelihood: Database["public"]["Enums"]["risk_likelihood"]
+          impact: string | null
+          mitigation_status: Database["public"]["Enums"]["mitigation_status"]
+          mitigation_plan: string | null
+          owner_id: string | null
+          model_id: string | null
+          vendor_id: string | null
+          identified_date: string | null
+          review_date: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          title: string
+          description?: string | null
+          category?: string | null
+          severity?: Database["public"]["Enums"]["risk_severity"]
+          likelihood?: Database["public"]["Enums"]["risk_likelihood"]
+          impact?: string | null
+          mitigation_status?: Database["public"]["Enums"]["mitigation_status"]
+          mitigation_plan?: string | null
+          owner_id?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          identified_date?: string | null
+          review_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          title?: string
+          description?: string | null
+          category?: string | null
+          severity?: Database["public"]["Enums"]["risk_severity"]
+          likelihood?: Database["public"]["Enums"]["risk_likelihood"]
+          impact?: string | null
+          mitigation_status?: Database["public"]["Enums"]["mitigation_status"]
+          mitigation_plan?: string | null
+          owner_id?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          identified_date?: string | null
+          review_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risks_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risks_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evidence: {
+        Row: {
+          id: string
+          organization_id: string
+          name: string
+          description: string | null
+          file_url: string | null
+          file_type: string | null
+          file_size: number | null
+          evidence_type: Database["public"]["Enums"]["evidence_type"]
+          category: string | null
+          model_id: string | null
+          vendor_id: string | null
+          assessment_id: string | null
+          uploaded_by: string | null
+          expires_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          name: string
+          description?: string | null
+          file_url?: string | null
+          file_type?: string | null
+          file_size?: number | null
+          evidence_type?: Database["public"]["Enums"]["evidence_type"]
+          category?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          assessment_id?: string | null
+          uploaded_by?: string | null
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          name?: string
+          description?: string | null
+          file_url?: string | null
+          file_type?: string | null
+          file_size?: number | null
+          evidence_type?: Database["public"]["Enums"]["evidence_type"]
+          category?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          assessment_id?: string | null
+          uploaded_by?: string | null
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policies: {
+        Row: {
+          id: string
+          organization_id: string
+          title: string
+          description: string | null
+          content: string | null
+          category: string | null
+          version: string | null
+          status: Database["public"]["Enums"]["policy_status"]
+          owner_id: string | null
+          effective_date: string | null
+          review_date: string | null
+          approved_by: string | null
+          approved_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          title: string
+          description?: string | null
+          content?: string | null
+          category?: string | null
+          version?: string | null
+          status?: Database["public"]["Enums"]["policy_status"]
+          owner_id?: string | null
+          effective_date?: string | null
+          review_date?: string | null
+          approved_by?: string | null
+          approved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          title?: string
+          description?: string | null
+          content?: string | null
+          category?: string | null
+          version?: string | null
+          status?: Database["public"]["Enums"]["policy_status"]
+          owner_id?: string | null
+          effective_date?: string | null
+          review_date?: string | null
+          approved_by?: string | null
+          approved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policies_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policies_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policies_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          organization_id: string
+          user_id: string
+          type: Database["public"]["Enums"]["notification_type"]
+          title: string
+          message: string | null
+          link: string | null
+          is_read: boolean
+          entity_type: string | null
+          entity_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          user_id: string
+          type: Database["public"]["Enums"]["notification_type"]
+          title: string
+          message?: string | null
+          link?: string | null
+          is_read?: boolean
+          entity_type?: string | null
+          entity_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          user_id?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          title?: string
+          message?: string | null
+          link?: string | null
+          is_read?: boolean
+          entity_type?: string | null
+          entity_id?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          id: string
+          user_id: string
+          theme: string | null
+          email_notifications: boolean | null
+          push_notifications: boolean | null
+          notification_frequency: string | null
+          dashboard_layout: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          theme?: string | null
+          email_notifications?: boolean | null
+          push_notifications?: boolean | null
+          notification_frequency?: string | null
+          dashboard_layout?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          theme?: string | null
+          email_notifications?: boolean | null
+          push_notifications?: boolean | null
+          notification_frequency?: string | null
+          dashboard_layout?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bias_tests: {
+        Row: {
+          id: string
+          organization_id: string
+          model_id: string
+          test_type: string
+          protected_attribute: string
+          result: string
+          score: number | null
+          threshold: number | null
+          details: Json | null
+          tested_by: string | null
+          test_date: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          model_id: string
+          test_type: string
+          protected_attribute: string
+          result: string
+          score?: number | null
+          threshold?: number | null
+          details?: Json | null
+          tested_by?: string | null
+          test_date?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          model_id?: string
+          test_type?: string
+          protected_attribute?: string
+          result?: string
+          score?: number | null
+          threshold?: number | null
+          details?: Json | null
+          tested_by?: string | null
+          test_date?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bias_tests_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bias_tests_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bias_tests_tested_by_fkey"
+            columns: ["tested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_cases: {
+        Row: {
+          id: string
+          organization_id: string
+          name: string
+          description: string | null
+          status: Database["public"]["Enums"]["use_case_status"]
+          progress: number
+          risk_level: Database["public"]["Enums"]["use_case_risk"]
+          department: string | null
+          owner_id: string | null
+          owner_name: string | null
+          model_id: string | null
+          vendor_id: string | null
+          business_justification: string | null
+          target_completion_date: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id?: string
+          name: string
+          description?: string | null
+          status?: Database["public"]["Enums"]["use_case_status"]
+          progress?: number
+          risk_level?: Database["public"]["Enums"]["use_case_risk"]
+          department?: string | null
+          owner_id?: string | null
+          owner_name?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          business_justification?: string | null
+          target_completion_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          name?: string
+          description?: string | null
+          status?: Database["public"]["Enums"]["use_case_status"]
+          progress?: number
+          risk_level?: Database["public"]["Enums"]["use_case_risk"]
+          department?: string | null
+          owner_id?: string | null
+          owner_name?: string | null
+          model_id?: string | null
+          vendor_id?: string | null
+          business_justification?: string | null
+          target_completion_date?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_cases_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_cases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_cases_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_cases_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -479,6 +1078,16 @@ export type Database = {
       incident_status: "open" | "investigating" | "mitigated" | "closed"
       model_status: "approved" | "restricted" | "pending" | "blocked"
       risk_level: "high" | "medium" | "low"
+      task_status: "todo" | "in_progress" | "review" | "completed"
+      task_priority: "low" | "medium" | "high" | "critical"
+      risk_severity: "negligible" | "minor" | "moderate" | "major" | "critical"
+      risk_likelihood: "very_low" | "low" | "medium" | "high" | "very_high"
+      mitigation_status: "not_started" | "in_progress" | "completed" | "accepted"
+      policy_status: "draft" | "under_review" | "published" | "archived"
+      evidence_type: "document" | "screenshot" | "audit_report" | "certification" | "test_result" | "other"
+      notification_type: "task_assigned" | "deadline_approaching" | "incident_reported" | "assessment_required" | "policy_updated" | "system"
+      use_case_status: "not_started" | "in_progress" | "completed" | "on_hold"
+      use_case_risk: "low" | "medium" | "high"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -611,6 +1220,16 @@ export const Constants = {
       incident_status: ["open", "investigating", "mitigated", "closed"],
       model_status: ["approved", "restricted", "pending", "blocked"],
       risk_level: ["high", "medium", "low"],
+      task_status: ["todo", "in_progress", "review", "completed"],
+      task_priority: ["low", "medium", "high", "critical"],
+      risk_severity: ["negligible", "minor", "moderate", "major", "critical"],
+      risk_likelihood: ["very_low", "low", "medium", "high", "very_high"],
+      mitigation_status: ["not_started", "in_progress", "completed", "accepted"],
+      policy_status: ["draft", "under_review", "published", "archived"],
+      evidence_type: ["document", "screenshot", "audit_report", "certification", "test_result", "other"],
+      notification_type: ["task_assigned", "deadline_approaching", "incident_reported", "assessment_required", "policy_updated", "system"],
+      use_case_status: ["not_started", "in_progress", "completed", "on_hold"],
+      use_case_risk: ["low", "medium", "high"],
     },
   },
 } as const
