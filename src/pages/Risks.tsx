@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Search, Info, Loader2 } from "lucide-react";
+import { Plus, Search, Info, Loader2, Bot, Radar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,6 +73,7 @@ export default function Risks() {
 
   const [search, setSearch] = useState("");
   const [likelihoodFilter, setLikelihoodFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
 
@@ -93,9 +94,13 @@ export default function Risks() {
         risk.title.toLowerCase().includes(search.toLowerCase()) ||
         (risk.description?.toLowerCase() || "").includes(search.toLowerCase());
       const matchesLikelihood = likelihoodFilter === "all" || risk.likelihood === likelihoodFilter;
-      return matchesSearch && matchesLikelihood;
+      const matchesSource =
+        sourceFilter === "all" ||
+        (sourceFilter === "ai-generated" && risk.auto_generated) ||
+        (sourceFilter === "manual" && !risk.auto_generated);
+      return matchesSearch && matchesLikelihood && matchesSource;
     });
-  }, [risks, search, likelihoodFilter]);
+  }, [risks, search, likelihoodFilter, sourceFilter]);
 
   const stats = useMemo(() => ({
     veryHigh: risks.filter(r => r.likelihood === "very_high").length,
@@ -263,6 +268,16 @@ export default function Risks() {
             <SelectItem value="very_low">Very Low</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={sourceFilter} onValueChange={setSourceFilter}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Source" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Sources</SelectItem>
+            <SelectItem value="ai-generated">AI-Generated Only</SelectItem>
+            <SelectItem value="manual">Manual Only</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -283,11 +298,33 @@ export default function Risks() {
             {filteredRisks.map((risk) => (
               <TableRow key={risk.id}>
                 <TableCell>
-                  <div className="max-w-[250px]">
-                    <div className="font-medium truncate">{risk.title}</div>
+                  <div className="max-w-[300px]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-medium truncate">{risk.title}</span>
+                      {risk.auto_generated && (
+                        <Badge variant="outline" className="text-[10px] shrink-0 gap-0.5 border-purple-500/50 text-purple-400">
+                          <Bot className="h-2.5 w-2.5" />
+                          Auto
+                        </Badge>
+                      )}
+                    </div>
                     <div className="text-sm text-muted-foreground truncate">
                       {risk.description}
                     </div>
+                    {risk.auto_generated && (risk.source || risk.regulation) && (
+                      <div className="flex items-center gap-1 mt-1">
+                        {risk.source && (
+                          <Badge variant="secondary" className="text-[10px]">
+                            {risk.source}
+                          </Badge>
+                        )}
+                        {risk.regulation && (
+                          <Badge variant="secondary" className="text-[10px]">
+                            {risk.regulation}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>

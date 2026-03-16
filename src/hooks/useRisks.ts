@@ -24,6 +24,11 @@ export interface Risk {
   review_date: string | null;
   created_at: string;
   updated_at: string;
+  source: string | null;
+  regulation: string | null;
+  affected_framework: string | null;
+  recommended_action: string | null;
+  auto_generated: boolean;
   profiles?: { full_name: string | null } | null;
   models?: { name: string } | null;
   vendors?: { name: string } | null;
@@ -43,6 +48,11 @@ export interface RiskInsert {
   vendor_id?: string | null;
   identified_date?: string | null;
   review_date?: string | null;
+  source?: string | null;
+  regulation?: string | null;
+  affected_framework?: string | null;
+  recommended_action?: string | null;
+  auto_generated?: boolean;
 }
 
 export interface RiskUpdate extends Partial<RiskInsert> {
