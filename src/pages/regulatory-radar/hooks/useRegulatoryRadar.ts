@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getOrganizationId } from '@/hooks/useOrganizationId';
 import { toast } from 'sonner';
 import { runAllAgents, REGULATORY_SOURCES, type AgentStatusUpdate } from '../api/tinyfish';
 import { classifyAllResults, type ClassifiedAlert } from '../api/classifier';
@@ -68,17 +69,7 @@ export function useRegulatoryRadar() {
   }, []);
 
   const insertAlertToSupabase = useCallback(async (alert: ClassifiedAlert) => {
-    // Get user's organization_id
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('organization_id')
-      .single();
-
-    if (profileError || !profile?.organization_id) {
-      console.error('Failed to get organization_id:', profileError);
-      toast.error('Cannot save to Risk Register — no organization found. Please ensure your profile is set up.');
-      throw new Error('No organization_id found');
-    }
+    const organizationId = await getOrganizationId();
 
     // Build the full risk payload with RegulatoryRadar-specific columns
     const riskPayload = {
@@ -88,7 +79,7 @@ export function useRegulatoryRadar() {
       category: alert.category || 'regulatory',
       mitigation_status: 'not_started' as const,
       likelihood: (alert.severity === 'critical' ? 'very_high' : alert.severity === 'major' ? 'high' : 'medium') as const,
-      organization_id: profile.organization_id,
+      organization_id: organizationId,
       identified_date: alert.date || new Date().toISOString().split('T')[0],
       source: alert.source,
       regulation: alert.regulation,

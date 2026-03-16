@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId } from "./useOrganizationId";
 import { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 
@@ -27,14 +28,11 @@ export function useCreateModel() {
 
   return useMutation({
     mutationFn: async (model: ModelInsert) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("models")
-        .insert({ ...model, organization_id: profile?.organization_id })
+        .insert({ ...model, organization_id: organizationId })
         .select()
         .single();
 

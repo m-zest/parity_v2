@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId } from "./useOrganizationId";
 import { toast } from "sonner";
 
 export type UseCaseStatus = "not_started" | "in_progress" | "completed" | "on_hold";
@@ -65,14 +66,11 @@ export function useCreateUseCase() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (useCase: UseCaseInsert) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("use_cases")
-        .insert({ ...useCase, organization_id: profile?.organization_id ?? "" })
+        .insert({ ...useCase, organization_id: organizationId })
         .select()
         .single();
 

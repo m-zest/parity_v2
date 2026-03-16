@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getOrganizationId } from "./useOrganizationId";
 
 export type RiskSeverity = "negligible" | "minor" | "moderate" | "major" | "critical";
 export type RiskLikelihood = "very_low" | "low" | "medium" | "high" | "very_high";
@@ -78,14 +79,11 @@ export function useCreateRisk() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (risk: RiskInsert) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("risks")
-        .insert({ ...risk, organization_id: profile?.organization_id ?? "" })
+        .insert({ ...risk, organization_id: organizationId })
         .select()
         .single();
 

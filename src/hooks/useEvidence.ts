@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId, getProfileAndOrgId } from "./useOrganizationId";
 import { toast } from "sonner";
 
 export type EvidenceType = "document" | "screenshot" | "audit_report" | "certification" | "test_result" | "other";
@@ -63,17 +64,14 @@ export function useCreateEvidence() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (evidence: EvidenceInsert) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id, id")
-        .single();
+      const { profileId, organizationId } = await getProfileAndOrgId();
 
       const { data, error } = await supabase
         .from("evidence")
         .insert({
           ...evidence,
-          organization_id: profile?.organization_id ?? "",
-          uploaded_by: profile?.id,
+          organization_id: organizationId,
+          uploaded_by: profileId,
         })
         .select()
         .single();
@@ -127,14 +125,9 @@ export function useDeleteEvidence() {
 }
 
 export async function uploadEvidenceFile(file: File): Promise<{ url: string; path: string } | null> {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("organization_id")
-    .single();
+  const organizationId = await getOrganizationId();
 
-  if (!profile?.organization_id) return null;
-
-  const filePath = `${profile.organization_id}/${Date.now()}-${file.name}`;
+  const filePath = `${organizationId}/${Date.now()}-${file.name}`;
   const { error } = await supabase.storage
     .from("evidence")
     .upload(filePath, file);
@@ -166,10 +159,7 @@ export function useUploadEvidence() {
       const uploaded = await uploadEvidenceFile(file);
       if (!uploaded) throw new Error("File upload failed");
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id, id")
-        .single();
+      const { profileId, organizationId } = await getProfileAndOrgId();
 
       const { data, error } = await supabase
         .from("evidence")
@@ -178,8 +168,8 @@ export function useUploadEvidence() {
           file_url: uploaded.url,
           file_size: file.size,
           file_type: file.name.split(".").pop() || null,
-          organization_id: profile?.organization_id ?? "",
-          uploaded_by: profile?.id,
+          organization_id: organizationId,
+          uploaded_by: profileId,
         })
         .select()
         .single();
