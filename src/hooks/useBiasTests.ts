@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId } from "./useOrganizationId";
 import { toast } from "sonner";
 
 export type BiasTestResult = "pass" | "fail" | "warning";
@@ -72,14 +73,11 @@ export function useCreateBiasTest() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (test: BiasTestInsert) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("bias_tests")
-        .insert({ ...test, organization_id: profile?.organization_id ?? "" })
+        .insert({ ...test, organization_id: organizationId })
         .select()
         .single();
 

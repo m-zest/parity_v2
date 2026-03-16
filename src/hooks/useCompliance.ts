@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId } from "./useOrganizationId";
 import { toast } from "sonner";
 
 export interface ComplianceFramework {
@@ -114,16 +115,13 @@ export function useCreateAssessment() {
       deadline?: string | null;
       checklist_progress?: string[];
     }) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("compliance_assessments")
         .insert({
           ...assessment,
-          organization_id: profile?.organization_id,
+          organization_id: organizationId,
           status: assessment.status || "pending",
         })
         .select()

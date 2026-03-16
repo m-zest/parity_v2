@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId } from "./useOrganizationId";
 import { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,15 +29,11 @@ export function useCreateVendor() {
 
   return useMutation({
     mutationFn: async (vendor: Omit<VendorInsert, "id" | "created_at" | "updated_at" | "organization_id">) => {
-      // Fetch user's organization_id from their profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("vendors")
-        .insert({ ...vendor, organization_id: profile?.organization_id })
+        .insert({ ...vendor, organization_id: organizationId })
         .select()
         .single();
 

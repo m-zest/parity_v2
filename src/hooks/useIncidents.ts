@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getOrganizationId } from "./useOrganizationId";
 import { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,14 +29,11 @@ export function useCreateIncident() {
 
   return useMutation({
     mutationFn: async (incident: Omit<IncidentInsert, "id" | "created_at" | "updated_at">) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization_id")
-        .single();
+      const organizationId = await getOrganizationId();
 
       const { data, error } = await supabase
         .from("incidents")
-        .insert({ ...incident, organization_id: profile?.organization_id })
+        .insert({ ...incident, organization_id: organizationId })
         .select()
         .single();
 
