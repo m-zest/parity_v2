@@ -33,6 +33,7 @@ export const config = {
     enableEmailNotifications: false,
     enableApiIntegrations: false,
     enableCustomReports: false,
+    enableRegulatoryRadar: true,
     enableWorkflowAutomation: false,
     enableSSO: false,
   },
