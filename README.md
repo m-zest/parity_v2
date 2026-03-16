@@ -32,6 +32,7 @@ Parity AI is a comprehensive platform that enables organizations to govern AI sy
 - **Audit Trail** — Complete documentation and evidence management for regulatory audits
 - **Executive Reporting** — One-click PDF reports for board meetings and regulatory submissions
 - **Public Transparency** — Citizen-facing transparency portal for democratic AI accountability
+- **RegulatoryRadar** — Autonomous multi-agent regulatory scanning with AI-powered classification and enforcement
 
 ---
 
@@ -73,6 +74,35 @@ Parity AI is a comprehensive platform that enables organizations to govern AI sy
 | **Policy Manager** | `/policies` | Policy documentation and management | Supabase |
 | **Incidents** | `/incidents` | Incident reporting, investigation workflow, severity tracking, filters, PDF export | Supabase |
 | **User Management** | `/settings/users` | Role-based access control (admin/user/viewer), user listing | Supabase (admin only) |
+| **RegulatoryRadar** | `/regulatory-radar` | Autonomous regulatory scanning, AI classification, risk enforcement, PDF export, demo mode | TinyFish + Fireworks AI + Supabase |
+
+### RegulatoryRadar — Autonomous Compliance Enforcement
+
+RegulatoryRadar is a professional-grade autonomous compliance scanner that monitors government regulatory sources and automatically classifies and enforces new requirements into your Risk Register.
+
+**How It Works — 3-Phase Pipeline:**
+
+| Phase | What Happens | Technology |
+|-------|-------------|------------|
+| **DETECT** | 4 TinyFish AI agents browse regulatory sources (EUR-Lex, EU AI Office, NIST, NYC LL144) and extract updates | TinyFish Web Agent API |
+| **CLASSIFY** | Raw scraped data is sent to an LLM for severity classification, category tagging, and recommended action generation | Fireworks AI (Llama 3.1 70B) |
+| **ENFORCE** | Classified alerts are auto-saved as risks in the Risk Register with full source attribution | Supabase |
+
+**Features:**
+- Live scan with animated progress indicators and real-time agent status cards
+- 4 regulatory source agents: EUR-Lex, EU AI Office, NIST, NYC Local Law 144
+- AI-powered severity classification (Critical / Major / Moderate / Minor)
+- Automatic Risk Register enforcement — alerts become tracked risks
+- PDF compliance report export with severity breakdown and recommendations
+- Demo Mode for presentations — simulated scan with realistic data (no API keys needed)
+- Scan history with timestamps, alert counts, and links to Risk Register
+- Toast notifications for critical/major alerts
+
+**Environment Variables:**
+```
+VITE_TINYFISH_API_KEY=your-tinyfish-api-key
+VITE_FIREWORKS_API_KEY=your-fireworks-api-key
+```
 
 ### Transparency Tools (Dashboard)
 
@@ -210,6 +240,21 @@ Navigate to `/public/transparency` (no login needed):
 - **User**: Standard access, no User Management
 - **Viewer**: Read-only access to dashboard and modules
 
+### 11. RegulatoryRadar Verification
+
+Navigate to `/regulatory-radar` from the Assurance section in the sidebar:
+
+1. **Demo Mode** — Click "Demo Mode" to run a simulated scan (no API keys needed)
+   - Agent status cards should animate from "running" to "complete" one by one
+   - Alert feed should populate with 4 classified alerts
+   - Stats row should update: Alerts Found, Last Scan time, Success Rate
+   - Toast notifications appear for critical and major alerts
+2. **Live Scan** — Click "Run Regulatory Scan" (requires TinyFish + Fireworks API keys in `.env`)
+   - Real agents browse government websites and extract regulatory updates
+   - Alerts are classified by AI and saved to Risk Register
+3. **Export PDF** — Click "Export PDF" to download a compliance report of scan results
+4. **Risk Register Integration** — Navigate to Risk Management to see auto-generated risks with "auto-generated" badges
+
 ---
 
 ## Supported Compliance Frameworks
@@ -236,6 +281,8 @@ Navigate to `/public/transparency` (no login needed):
 | **UI Components** | Tailwind CSS 3, shadcn/ui (Radix primitives) |
 | **State Management** | TanStack React Query 5 |
 | **Backend** | Supabase (PostgreSQL, Auth, Storage, Realtime) |
+| **AI Agents** | TinyFish Web Agent API (regulatory scraping) |
+| **LLM Classification** | Fireworks AI — Llama 3.1 70B (alert classification) |
 | **Charts** | Recharts |
 | **PDF Generation** | jsPDF + jsPDF-AutoTable |
 | **CSV Import** | PapaParse |
@@ -269,7 +316,8 @@ parity-ai/
 │   ├── integrations/supabase/  # Supabase client & generated types
 │   ├── lib/                    # 6 PDF report generators + utils
 │   ├── pages/                  # 25+ route page components
-│   │   └── products/           # FinParity, MedParity, ContentGuard, Enterprise
+│   │   ├── products/           # FinParity, MedParity, ContentGuard, Enterprise
+│   │   └── regulatory-radar/   # RegulatoryRadar page, agents API, classifier, hooks, demo data
 │   ├── test/                   # Vitest setup & example test
 │   ├── types/                  # TypeScript type definitions
 │   ├── App.tsx                 # Root with routes (30+ routes)
@@ -453,6 +501,12 @@ CMD ["npm", "run", "preview"]
 - [x] Policy management
 - [x] Multi-tenant organization support
 - [x] Full Supabase integration with RLS
+- [x] RegulatoryRadar — Autonomous multi-agent regulatory scanning
+- [x] TinyFish integration for web scraping government sources
+- [x] Fireworks AI integration for LLM-powered alert classification
+- [x] Automatic Risk Register enforcement from regulatory alerts
+- [x] RegulatoryRadar PDF compliance report export
+- [x] RegulatoryRadar Demo Mode for presentations
 
 ### In Development
 
